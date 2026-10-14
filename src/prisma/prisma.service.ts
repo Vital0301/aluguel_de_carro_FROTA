@@ -11,7 +11,7 @@ export class PrismaService
 {
   constructor(configService: ConfigService) {
     const url = new URL(
-      configService.getOrThrow<string>('DATABASE_URL'),
+      configService.getOrThrow<string>('DB_FROTA'),
     );
 
     const adapter = new PrismaMariaDb({
