@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model Veiculo {
+  veiculo_id             BigInt   @id @default(autoincrement())
+  categoria_veiculo_id   BigInt
+  veiculo_placa          String   @unique(map: "plate_UNIQUE") @db.VarChar(10)
+  veiculo_marca          String   @db.VarChar(60)
+  veiculo_modelo         String   @db.VarChar(80)
+  veiculo_ano_fabricacao Int      @db.SmallInt
+  veiculo_ano_modelo     Int      @db.SmallInt
+  veiculo_cor            String?  @db.VarChar(45)
+  veiculo_quilometragem  Int      @default(0)
+  veiculo_criado         DateTime @db.DateTime(0)
+  veiculo_atualizado     DateTime @db.DateTime(0)
+  veiculo_status         Int
+
+  @@index([categoria_veiculo_id], map: "fk_vehicle_category_idx")
+  @@map("veiculo")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model bloqueio_veiculo {
+  bloqueio_veiculo_id                    BigInt   @id @default(autoincrement())
+  veiculo_id                             BigInt
+  bloqueio_veiculo_referencia_externa_id BigInt
+  bloqueio_veiculo_tipo                  Int
+  bloqueio_veiculo_data_inicio           DateTime @db.DateTime(0)
+  bloqueio_veiculo_data_final            DateTime @db.DateTime(0)
+  bloqueio_veiculo_ativo                 Int?     @db.TinyInt
+  bloqueio_veiculo_criado                DateTime @db.DateTime(0)
+
+  @@index([veiculo_id], map: "fk_vehicle_idx")
+}
+
+model categoria_veiculo {
+  categoria_veiculo_id           BigInt  @id @default(autoincrement())
+  categoria_veiculo_nome         String  @db.VarChar(100)
+  categoria_veiculo_descricao    String? @db.VarChar(255)
+  categoria_veiculo_valor_diaria Decimal @db.Decimal(10, 2)
+  categoria_veiculo_ativo        Boolean @default(true)
+  categoria_veiculo_status       Int?
+}
