@@ -1,0 +1,13 @@
+services:
+  frota:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: microservico-frota
+    ports:
+      - "3000:3000"
+    environment:
+      DB_FROTA: ${DB_FROTA:?DB_FROTA nao definida}
+      PORT: "3000"
+      NODE_ENV: production
+    restart: unless-stopped
