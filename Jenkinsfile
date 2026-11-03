@@ -27,7 +27,7 @@ pipeline {
             steps {
                 withCredentials([
                     string(
-                        credentialsId: 'tokenvitalaluguelveiculos',
+                        credentialsId: 'tokenvitalaluguelveiculo',
                         variable: 'INFISICAL_TOKEN'
                     )
                 ]) {
@@ -50,7 +50,7 @@ pipeline {
             steps {
                 withCredentials([
                     string(
-                        credentialsId: 'tokenvitalaluguelveiculos',
+                        credentialsId: 'tokenvitalaluguelveiculo',
                         variable: 'INFISICAL_TOKEN'
                     )
                 ]) {
@@ -73,7 +73,7 @@ pipeline {
             steps {
                 withCredentials([
                     string(
-                        credentialsId: 'tokenvitalaluguelveiculos',
+                        credentialsId: 'tokenvitalaluguelveiculo',
                         variable: 'INFISICAL_TOKEN'
                     )
                 ]) {
