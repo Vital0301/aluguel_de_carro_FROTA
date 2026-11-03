@@ -7,11 +7,11 @@ services:
     container_name: microservico-frota
 
     ports:
-      - "7542:3000"
+      - "7542:7542"
 
     environment:
       DB_FROTA: ${DB_FROTA:?DB_FROTA nao definida}
-      PORT: "3000"
+      PORT: "7542"
       NODE_ENV: development
 
     restart: unless-stopped

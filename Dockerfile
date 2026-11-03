@@ -29,6 +29,6 @@ COPY --from=build /app ./
 ENV NODE_ENV=development
 ENV PORT=7542
 
-EXPOSE 3000
+EXPOSE 7542
 
 CMD ["node", "dist/main.js"]
