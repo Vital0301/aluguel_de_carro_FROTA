@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
 
@@ -16,6 +17,8 @@ pipeline {
 
         stage('Instalar Dependências') {
             steps {
+                sh 'node --version'
+                sh 'npm --version'
                 sh 'npm ci'
             }
         }
