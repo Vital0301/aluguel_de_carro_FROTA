@@ -73,7 +73,7 @@ pipeline {
             steps {
                 withCredentials([
                     string(
-                        credentialsId: 'infisical-token-dev',
+                        credentialsId: 'tokenvitalaluguelveiculos',
                         variable: 'INFISICAL_TOKEN'
                     )
                 ]) {
