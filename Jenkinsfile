@@ -10,7 +10,7 @@ pipeline {
 
         stage('Instalar Dependências') {
             steps {
-                bat 'npm ci'
+                sh 'npm ci'
             }
         }
 
@@ -22,8 +22,8 @@ pipeline {
                         variable: 'INFISICAL_TOKEN'
                     )
                 ]) {
-                    bat '''
-                        infisical run --projectId=cbcc8789-3cf2-440c-8e90-8dfff9872bff --env=dev --path=/ --token="%INFISICAL_TOKEN%" -- docker compose build
+                    sh '''
+                        infisical run --projectId=cbcc8789-3cf2-440c-8e90-8dfff9872bff --env=dev --path=/ --token="$INFISICAL_TOKEN" -- docker compose build
                     '''
                 }
             }
@@ -37,8 +37,8 @@ pipeline {
                         variable: 'INFISICAL_TOKEN'
                     )
                 ]) {
-                    bat '''
-                        infisical run --projectId=cbcc8789-3cf2-440c-8e90-8dfff9872bff --env=dev --path=/ --token="%INFISICAL_TOKEN%" -- docker compose up -d --no-build
+                    sh '''
+                        infisical run --projectId=cbcc8789-3cf2-440c-8e90-8dfff9872bff --env=dev --path=/ --token="$INFISICAL_TOKEN" -- docker compose up -d --no-build
                     '''
                 }
             }
