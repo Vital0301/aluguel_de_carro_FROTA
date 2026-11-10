@@ -1,4 +1,3 @@
-
 pipeline {
     agent any
 
@@ -8,87 +7,87 @@ pipeline {
         timestamps()
     }
 
+   environment {
+        APP_NAME = 'frota'
+    }
+
     stages {
-        stage('Verificar Repositório') {
+
+        stage('Checkout GitHub') {
             steps {
-                checkout scm
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/main']],
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/Vital0301/aluguel_de_carro_FROTA.git'
+                    ]]
+                ])
             }
         }
 
-        stage('Instalar Dependências') {
+        stage('Fetch Secrets - Infisical') {
             steps {
-                sh 'node --version'
-                sh 'npm --version'
-                sh 'npm ci'
+                withCredentials([
+                    string(
+                        credentialsId: 'tokenvitalfrota',
+                        variable: 'INFISICAL_TOKEN'
+                    )
+                ]) {
+                        sh '''
+                            set +x
+                            set -eu
+                            umask 077
+                            rm -f .env
+                        
+                            npx -y @infisical/cli export \
+                                --env="dev" \
+                                --path="/frota" \
+                                --token="$INFISICAL_TOKEN" \
+                                > .env
+                        
+                            test -s .env || { echo "ERRO: .env vazio."; exit 1; }
+                        
+                            echo "Variáveis carregadas:"
+                            cut -d= -f1 .env
+                        '''
+                }
             }
         }
 
         stage('Validar Docker Compose') {
             steps {
-                withCredentials([
-                    string(
-                        credentialsId: 'tokenvitalaluguelveiculo',
-                        variable: 'INFISICAL_TOKEN'
-                    )
-                ]) {
-                    sh '''
-                        set +x
-                        set -eu
+                sh '''
+                    set -eu
 
-                        npx -y @infisical/cli run \
-                            --projectId=cbcc8789-3cf2-440c-8e90-8dfff9872bff \
-                            --env=dev \
-                            --path=/ \
-                            --token="$INFISICAL_TOKEN" \
-                            -- docker compose config --quiet
-                    '''
-                }
+                    docker compose config --quiet
+
+                    echo "Docker Compose validado."
+                '''
             }
         }
 
         stage('Construir Imagem Docker') {
             steps {
-                withCredentials([
-                    string(
-                        credentialsId: 'tokenvitalaluguelveiculo',
-                        variable: 'INFISICAL_TOKEN'
-                    )
-                ]) {
-                    sh '''
-                        set +x
-                        set -eu
+                sh '''
+                    set -eu
 
-                        npx -y @infisical/cli run \
-                            --projectId=cbcc8789-3cf2-440c-8e90-8dfff9872bff \
-                            --env=dev \
-                            --path=/ \
-                            --token="$INFISICAL_TOKEN" \
-                            -- docker compose build
-                    '''
-                }
+                    docker compose build
+
+                    echo "Imagem Docker construída."
+                '''
             }
         }
 
-        stage('Fazer Deploy') {
+        stage('Deploy Docker') {
             steps {
-                withCredentials([
-                    string(
-                        credentialsId: 'tokenvitalaluguelveiculo',
-                        variable: 'INFISICAL_TOKEN'
-                    )
-                ]) {
-                    sh '''
-                        set +x
-                        set -eu
+                sh '''
+                    set -eu
 
-                        npx -y @infisical/cli run \
-                            --projectId=cbcc8789-3cf2-440c-8e90-8dfff9872bff \
-                            --env=dev \
-                            --path=/ \
-                            --token="$INFISICAL_TOKEN" \
-                            -- docker compose up -d --no-build --force-recreate
-                    '''
-                }
+                    docker compose up -d --no-build \
+                        --force-recreate
+
+                    echo "Deploy executado."
+                '''
             }
         }
 
@@ -97,30 +96,60 @@ pipeline {
                 sh '''
                     set -eu
 
+                    echo "Verificando container..."
+
                     sleep 10
 
                     RUNNING=$(docker inspect \
                         --format '{{.State.Running}}' \
-                        microservico-frota)
+                        "$APP_NAME")
 
                     if [ "$RUNNING" != "true" ]; then
                         echo "ERRO: Container não está rodando."
+
+                        docker compose logs --tail=50 \
+                            "$APP_NAME" || true
+
                         exit 1
                     fi
 
                     echo "Container em execução."
+                    docker compose ps
+
+                    echo "Versão do Node.js no container:"
+                    docker exec "$APP_NAME" node -v
                 '''
             }
         }
     }
 
     post {
+
         success {
-            echo 'Deploy do Microserviço de Frota realizado com sucesso!'
+            echo '''
+            ====================================
+             RENTCAR FROTA
+             DEPLOY EXECUTADO COM SUCESSO
+             PORTA: 7542
+            ====================================
+            '''
         }
 
         failure {
-            echo 'Houve um erro durante o deploy.'
+            echo '''
+            ====================================
+             RENTCAR FROTA
+             FALHA NA EXECUÇÃO DO PIPELINE
+            ====================================
+            '''
         }
+
+        // always {
+        //     sh '''
+        //         set +x
+        //         rm -f .env
+        //     '''
+        // }
     }
 }
+    
