@@ -4,14 +4,16 @@ services:
       context: .
       dockerfile: Dockerfile
 
-    container_name: microservico-frota
+    image: rentcar-frota:latest
+    
+    container_name: rentcar-frota
 
     ports:
       - "7542:7542"
 
+    env_file:
+      - .env
+    
     environment:
-      DB_FROTA: ${DB_FROTA:?DB_FROTA nao definida}
       PORT: "7542"
       NODE_ENV: development
-
-    restart: unless-stopped
