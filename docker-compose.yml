@@ -4,9 +4,9 @@ services:
       context: .
       dockerfile: Dockerfile
 
-    image: rentcar-frota:latest
+    image: aluguelveiculo-frota:latest
     
-    container_name: rentcar-frota
+    container_name: aluguelveiculo-frota
 
     ports:
       - "7542:7542"
