@@ -8,7 +8,7 @@ pipeline {
     }
 
    environment {
-        APP_NAME = 'frota'
+        APP_NAME = 'aluguelveiculo-frota'
     }
 
     stages {
