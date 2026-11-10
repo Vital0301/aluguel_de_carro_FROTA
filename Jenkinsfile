@@ -29,7 +29,7 @@ pipeline {
             steps {
                 withCredentials([
                     string(
-                        credentialsId: 'tokenvitalfrota',
+                        credentialsId: 'tokenvitalaluguelveiculo',
                         variable: 'INFISICAL_TOKEN'
                     )
                 ]) {
@@ -41,7 +41,7 @@ pipeline {
                         
                             npx -y @infisical/cli export \
                                 --env="dev" \
-                                --path="/frota" \
+                                --path="/aluguelveiculo" \
                                 --token="$INFISICAL_TOKEN" \
                                 > .env
                         
